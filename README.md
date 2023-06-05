@@ -1,6 +1,12 @@
 # traveling-salesman-problem
 
-[Neural combinatorial optimization with reinforcement learning](https://arxiv.org/abs/1611.09940)の再現実装する
+## 利用可能な方策
+- SolverPolicy: 厳密解
+- GreedyPolicy: 近くの点を逐次的に選択する
+- Annealing
+    - TwoOptPolicy
+    - ThreeOptPolicy
+- PointerNetPolicy: https://arxiv.org/abs/1611.09940
 
 
 # Reference
