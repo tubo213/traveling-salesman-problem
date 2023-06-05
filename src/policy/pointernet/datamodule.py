@@ -1,7 +1,7 @@
 from pytorch_lightning import LightningDataModule
 from pytorch_pfn_extras.config import Config
-from src.generator import Generator
-from src.dataset import TSPDataset
+from generator import Generator
+from src.policy.pointernet.dataset import TSPDataset
 from torch.utils.data import DataLoader
 
 

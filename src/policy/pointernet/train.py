@@ -2,7 +2,7 @@ from pytorch_lightning import LightningModule, seed_everything
 from pytorch_pfn_extras.config import Config
 import torch.nn as nn
 import torch
-from src.datamodule import TSPDataModule
+from src.policy.pointernet.datamodule import TSPDataModule
 from src.config import load_config
 import wandb
 

@@ -1,7 +1,7 @@
-from src.generator import Generator
-from src.dataset import TSPDataset
-from src.datamodule import TSPDataModule
-from src.model import PointerNet, Critic
+from generator import Generator
+from src.policy.pointernet.dataset import TSPDataset
+from src.policy.pointernet.datamodule import TSPDataModule
+from src.policy.pointernet.model import PointerNet, Critic
 import torch.optim as optim
 from transformers import (
     get_cosine_schedule_with_warmup,
