@@ -1,5 +1,8 @@
 exp_name: test
-output_dir: "/workspaces/traveling-salesman-problem/results"
+output_dir:
+  type: add
+  a: "/workspaces/traveling-salesman-problem/results/pointernet/"
+  b: "@/exp_name"
 seed: 100
 num_workers: 24
 
@@ -52,6 +55,7 @@ actor_model:
   input_size: "@/dim_node"
   hidden_size: "@/hidden_size"
   num_layers: 3
+  search_method: "probabilistic"
 critic_model:
   type: Critic
   input_size: "@/dim_node"

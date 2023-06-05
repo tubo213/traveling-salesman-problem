@@ -1,0 +1,36 @@
+exp_name: default
+output_dir:
+  type: add
+  a: "/workspaces/traveling-salesman-problem/results/"
+  b: "@/exp_name"
+seed: 100
+
+# data config
+num_nodes: 100
+dim_node: 2
+num_samples: 1000
+
+# generator
+generator:
+  type: Generator
+  num_nodes: "@/num_nodes"
+  dim_node: "@/dim_node"
+
+# policies
+policies:
+  - type: RandomPolicy
+  - type: GreedyPolicy
+  - "@/pointernetpolicy"
+
+# PointerNetPolicy
+pointernetpolicy:
+  type: PointerNetPolicy
+  model:
+    type: PointerNet
+    input_size: "@/dim_node"
+    hidden_size: 128
+    num_layers: 3
+    search_method: "greedy"
+  ckpt_path: "/workspaces/traveling-salesman-problem/results/pointernet/exp001/last.ckpt"
+  device: cuda:0
+

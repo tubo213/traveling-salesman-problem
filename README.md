@@ -1,12 +1,13 @@
 # traveling-salesman-problem
 
 ## 利用可能な方策
+- RandomPolicy: ランダムに訪問
 - SolverPolicy: 厳密解
 - GreedyPolicy: 近くの点を逐次的に選択する
 - Annealing
     - TwoOptPolicy
     - ThreeOptPolicy
-- PointerNetPolicy: https://arxiv.org/abs/1611.09940
+- PointerNetPolicy: 深層強化学習, https://arxiv.org/abs/1611.09940
 
 
 # Reference

@@ -27,13 +27,14 @@ class Encoder(nn.Module):
 
 
 class Decoder(nn.Module):
-    def __init__(self, input_size, hidden_size):
+    def __init__(self, input_size, hidden_size, search_method="probabilistic"):
         super().__init__()
         self.lstm_cell = nn.LSTMCell(
             input_size=input_size,
             hidden_size=hidden_size,
         )
         self.attn = Attention(hidden_size)
+        self.search_method = search_method
 
         # bos parameter
         self.hx_0 = nn.Parameter(
@@ -68,8 +69,12 @@ class Decoder(nn.Module):
             log_prob_i = F.log_softmax(score, dim=1)
             log_prob.append(log_prob_i)
 
-            # sample from prob
-            position = torch.multinomial(log_prob_i.exp(), 1).squeeze().long()  # [N]
+            if self.search_method == "greedy":
+                position = torch.argmax(log_prob_i, dim=1).squeeze().long()  # [N]
+            elif self.search_method == "probabilistic":
+                position = torch.multinomial(log_prob_i.exp(), 1).squeeze().long()  # [N]
+            else:
+                raise ValueError("search_method must be 'greedy' or 'probabilistic'")
             pred_tour.append(position)
 
             # update mask
@@ -131,10 +136,10 @@ class Attention(nn.Module):
 
 
 class PointerNet(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers):
+    def __init__(self, input_size, hidden_size, num_layers, search_method="probabilistic"):
         super().__init__()
         self.encoder = Encoder(input_size, hidden_size, num_layers)
-        self.decoder = Decoder(input_size, hidden_size)
+        self.decoder = Decoder(input_size, hidden_size, search_method=search_method)
 
     def forward(self, x):
         """

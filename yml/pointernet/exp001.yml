@@ -1,0 +1,9 @@
+exp_name: exp001
+seed: 99
+
+# data config
+num_nodes: 100
+
+# train config
+batch_size: 32
+num_steps: 10000

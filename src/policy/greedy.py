@@ -3,6 +3,9 @@ import numpy as np
 
 
 class GreedyPolicy(BasePolicy):
+    def __init__(self, seed=0):
+        super().__init__(seed)
+
     def solve(self, x: np.ndarray):
         """
         x: [N, seq_len, input_size]

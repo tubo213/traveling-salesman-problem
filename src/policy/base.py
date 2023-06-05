@@ -4,7 +4,7 @@ from pytorch_lightning import seed_everything
 
 
 class BasePolicy(metaclass=ABCMeta):
-    def __init__(self, seed):
+    def __init__(self, seed=0):
         seed_everything(seed)
 
     @abstractmethod
@@ -13,3 +13,6 @@ class BasePolicy(metaclass=ABCMeta):
         x: [N, seq_len, input_size]
         """
         raise NotImplementedError
+
+    def __str__(self):
+        return self.__class__.__name__

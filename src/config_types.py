@@ -12,6 +12,13 @@ from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 from torch.utils.data import DataLoader
+from src.policy import (
+    TwoOptPolicy,
+    RandomPolicy,
+    PointerNetPolicy,
+    GreedyPolicy,
+)
+
 
 CONFIG_TYPES = {
     # utils
@@ -19,6 +26,12 @@ CONFIG_TYPES = {
     "multiply": lambda a, b: a * b,
     "add": lambda a, b: a + b,
     "method_call": lambda obj, method: getattr(obj, method)(),
+    # Policies
+    "RandomPolicy": RandomPolicy,
+    "GreedyPolicy": GreedyPolicy,
+    "TwoOptPolicy": TwoOptPolicy,
+    "PointerNetPolicy": PointerNetPolicy,
+    # For PointerNet
     # Generator
     "Generator": Generator,
     # Dataset

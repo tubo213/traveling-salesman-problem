@@ -1,17 +1,12 @@
-from pytorch_lightning import LightningModule, seed_everything
+from pytorch_lightning import LightningModule
 from pytorch_pfn_extras.config import Config
 import torch.nn as nn
 import torch
-from src.policy.pointernet.datamodule import TSPDataModule
-from src.config import load_config
-import wandb
-import click
 
 
 class ActorCriticModule(LightningModule):
     def __init__(self, cfg: Config):
         super().__init__()
-        self.save_hyperparameters()
         self.cfg = cfg
         self.actor = cfg["/actor_model"]
         self.critic = cfg["/critic_model"]
@@ -85,24 +80,3 @@ class ActorCriticModule(LightningModule):
         schedulers = [actor_scheduler, critic_scheduler]
 
         return optimizers, schedulers
-
-
-def train(cfg):
-    wandb.login()
-    seed_everything(cfg["/seed"])
-    model = ActorCriticModule(cfg)
-    datamodule = TSPDataModule(cfg)
-    trainer = cfg["/trainer"]
-    trainer.fit(model, datamodule)
-
-
-@click.command()
-@click.option("--config_path", "-c", default="yml/pointernet/test.yml")
-@click.option("--default_config_path", "-d", default="yml/pointernet/test_default.yml")
-def main(config_path, default_config_path):
-    cfg = load_config(config_path, default_config_path)
-    train(cfg)
-
-
-if __name__ == "__main__":
-    main()
