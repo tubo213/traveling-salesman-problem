@@ -1,7 +1,10 @@
 pytorch-lightning==2.0.2
 pytorch-pfn-extras
+transformers
 wandb
 black
 flake8
 isort
 mypy
+PyYAML
+types-PyYAML

@@ -1,0 +1,87 @@
+exp_name: test
+output_dir: "/workspaces/traveling-salesman-problem/results"
+seed: 100
+num_workers: 24
+
+# data config
+num_nodes: 10
+dim_node: 2
+
+# train config
+batch_size: 128
+num_steps: 50000
+train_num_samples: {type: multiply, a: "@/batch_size", b: "@/num_steps"}
+val_num_samples: 1000
+clip_grad_norm: 1.0
+
+# generator
+generator:
+  type: Generator
+  num_nodes: "@/num_nodes"
+  dim_node: "@/dim_node"
+
+# model
+hidden_size: 128
+actor_model:
+  type: PointerNet
+  input_size: "@/dim_node"
+  hidden_size: "@/hidden_size"
+  num_layers: 3
+critic_model:
+  type: Critic
+  input_size: "@/dim_node"
+  hidden_size: "@/hidden_size"
+  num_layers: 3
+
+# optimizer
+actor_optimizer:
+  type: AdamW
+  params: {type: method_call, obj: "@/actor_model", method: "parameters"}
+  lr: 0.001
+  weight_decay: 0.0001
+critic_optimizer:
+  type: AdamW
+  params: {type: method_call, obj: "@/critic_model", method: "parameters"}
+  lr: 0.001
+  weight_decay: 0.0001
+
+# scheduler
+actor_scheduler:
+  type: CosineWithWarmup
+  optimizer: "@/actor_optimizer"
+  num_warmup_steps: 1000
+  num_training_steps: "@/num_steps"
+critic_scheduler:
+  type: CosineWithWarmup
+  optimizer: "@/critic_optimizer"
+  num_warmup_steps: 1000
+  num_training_steps: "@/num_steps"
+
+# logger
+logger:
+  type: WandbLogger
+  project: "traveling-salesman-problem"
+  name: "@/exp_name"
+  save_dir: "@/output_dir"
+
+# callback
+callbacks:
+  - type: LearningRateMonitor
+    logging_interval: "step"
+  - type: ModelCheckpoint
+    dirpath: "@/output_dir"
+    monitor: "val_tour_dist"
+    mode: "min"
+    save_last: True
+    save_top_k: 1
+    verbose: True
+
+# trainer
+trainer:
+  type: Trainer
+  accelerator: "gpu"
+  max_epochs: 1
+  precision: 16
+  val_check_interval: 0.1
+  logger: "@/logger"
+  callbacks: "@/callbacks"
