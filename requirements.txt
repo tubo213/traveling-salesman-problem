@@ -1,0 +1,7 @@
+pytorch-lightning==2.0.2
+pytorch-pfn-extras
+wandb
+black
+flake8
+isort
+mypy
