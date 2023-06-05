@@ -97,8 +97,8 @@ def train(cfg):
 
 
 @click.command()
-@click.option("--config_path", "-c", default="yml/test.yml")
-@click.option("--default_config_path", "-d", default="yml/test_default.yml")
+@click.option("--config_path", "-c", default="yml/pointernet/test.yml")
+@click.option("--default_config_path", "-d", default="yml/pointernet/test_default.yml")
 def main(config_path, default_config_path):
     cfg = load_config(config_path, default_config_path)
     train(cfg)
