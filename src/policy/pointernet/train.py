@@ -89,9 +89,8 @@ class ActorCriticModule(LightningModule):
 def train(cfg):
     wandb.login()
     seed_everything(cfg["/seed"])
-    generator = cfg["/generator"]
     model = ActorCriticModule(cfg)
-    datamodule = TSPDataModule(cfg, generator)
+    datamodule = TSPDataModule(cfg)
     trainer = cfg["/trainer"]
     trainer.fit(model, datamodule)
 

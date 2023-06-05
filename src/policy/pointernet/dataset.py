@@ -1,10 +1,12 @@
 from torch.utils.data import Dataset
 import torch
+from src.generator import Generator
 
 
 class TSPDataset(Dataset):
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, num_nodes, dim_node, num_samples, seed=0):
+        generator = Generator(num_nodes, dim_node)
+        self.data = generator.get_data(num_samples, seed)
 
     def __len__(self):
         return len(self.data)

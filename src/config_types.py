@@ -1,4 +1,4 @@
-from generator import Generator
+from src.generator import Generator
 from src.policy.pointernet.dataset import TSPDataset
 from src.policy.pointernet.datamodule import TSPDataModule
 from src.policy.pointernet.model import PointerNet, Critic
@@ -11,16 +11,20 @@ from transformers import (
 from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
+from torch.utils.data import DataLoader
 
 CONFIG_TYPES = {
     # utils
     "__len__": lambda obj: len(obj),
     "multiply": lambda a, b: a * b,
+    "add": lambda a, b: a + b,
     "method_call": lambda obj, method: getattr(obj, method)(),
     # Generator
     "Generator": Generator,
     # Dataset
     "TSPDataset": TSPDataset,
+    # DataLoader
+    "DataLoader": DataLoader,
     # DataModule
     "TSPDataModule": TSPDataModule,
     # Optimizer

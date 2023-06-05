@@ -14,11 +14,36 @@ train_num_samples: {type: multiply, a: "@/batch_size", b: "@/num_steps"}
 val_num_samples: 1000
 clip_grad_norm: 1.0
 
-# generator
-generator:
-  type: Generator
+# dataset
+train_dataset:
+  type: TSPDataset
   num_nodes: "@/num_nodes"
   dim_node: "@/dim_node"
+  num_samples: "@/train_num_samples"
+  seed: {type: add, a: "@/seed", b: 1}
+val_dataset:
+  type: TSPDataset
+  num_nodes: "@/num_nodes"
+  dim_node: "@/dim_node"
+  num_samples: "@/val_num_samples"
+  seed: {type: add, a: "@/seed", b: 2}
+
+# dataloader
+train_dataloader:
+  type: DataLoader
+  dataset: "@/train_dataset"
+  batch_size: "@/batch_size"
+  num_workers: "@/num_workers"
+  drop_last: True
+  shuffle: True
+  pin_memory: True
+val_dataloader:
+  type: DataLoader
+  dataset: "@/val_dataset"
+  batch_size: "@/batch_size"
+  num_workers: "@/num_workers"
+  shuffle: False
+  pin_memory: True
 
 # model
 hidden_size: 128
