@@ -8,3 +8,4 @@ isort
 mypy
 PyYAML
 types-PyYAML
+click

@@ -5,6 +5,7 @@ import torch
 from src.policy.pointernet.datamodule import TSPDataModule
 from src.config import load_config
 import wandb
+import click
 
 
 class ActorCriticModule(LightningModule):
@@ -95,7 +96,13 @@ def train(cfg):
     trainer.fit(model, datamodule)
 
 
-if __name__ == "__main__":
-    path = "/workspaces/traveling-salesman-problem/yml/test_default.yml"
-    cfg = load_config(path)
+@click.command()
+@click.option("--config_path", "-c", default="yml/test.yml")
+@click.option("--default_config_path", "-d", default="yml/test_default.yml")
+def main(config_path, default_config_path):
+    cfg = load_config(config_path, default_config_path)
     train(cfg)
+
+
+if __name__ == "__main__":
+    main()
