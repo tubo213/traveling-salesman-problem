@@ -73,7 +73,7 @@ def plot_results(
             row = np.append(sample[sample_tour, 0], sample[sample_tour, 0][0])
             col = np.append(sample[sample_tour, 1], sample[sample_tour, 1][0])
             axes[i, j].plot(row, col, marker=".", markersize=10)
-            axes[i, j].set_title(title)
+            axes[i, j].set_title(title, fontsize=30)
 
     if save_dir is not None:
         save_path = save_dir / "samples.png"
@@ -84,7 +84,9 @@ def plot_results(
     for i, result in enumerate(results):
         label = f"{result.policy_name} score={result.score.mean():.2f}"
         ax.hist(result.score, label=label, alpha=0.7)
-        ax.set_title("Score distribution")
+        ax.set_title("Score distribution", fontsize=30)
+        ax.set_ylabel("Frequency", fontsize=20)
+        ax.set_xlabel("Length of tour", fontsize=20)
         ax.legend()
 
     if save_dir is not None:
