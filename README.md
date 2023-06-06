@@ -10,5 +10,11 @@
 - PointerNetPolicy: 深層強化学習, https://arxiv.org/abs/1611.09940
 
 
+## 結果
+
+![](./resources/exp001/score.png)
+
+![](./resources/exp001/samples.png)
+
 # Reference
 - Bello, I., Pham, H., Le, Q. V., Norouzi, M., & Bengio, S. (2016). Neural combinatorial optimization with reinforcement learning. arXiv preprint arXiv:1611.09940.
