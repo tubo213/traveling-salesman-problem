@@ -77,6 +77,7 @@ def plot_results(
         fig.savefig(save_path, bbox_inches="tight")
 
 
+# ref: https://blog.ysk.im/x/joblib-with-progress-bar
 @contextlib.contextmanager
 def tqdm_joblib(total: Optional[int] = None, **kwargs):
     pbar = tqdm(total=total, miniters=1, smoothing=0, **kwargs)
