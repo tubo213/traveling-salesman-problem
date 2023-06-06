@@ -5,12 +5,11 @@
 	// Update the 'dockerComposeFile' list if you have more compose files or use different names.
 	// The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
 	"dockerComposeFile": [
-		"../docker-compose.yml",
-		"docker-compose.yml"
+		"../docker-compose.yml"
 	],
 	// The 'service' property is the name of the service for the container that VS Code should
 	// use. Update this value and .devcontainer/docker-compose.yml to the real service name.
-	"service": "traveling_salesman_problem",
+	"service": "traveling_salesman_problem-gpu",
 	// The optional 'workspaceFolder' property is the path VS Code should open by default when
 	// connected. This is typically a file mount in .devcontainer/docker-compose.yml
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
@@ -28,41 +27,45 @@
 	// "customizations": {},
 	// Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "devcontainer"
-	"settings": {
-		"files.autoSave": "afterDelay",
-		"files.autoSaveDelay": 800,
-		"files.trimTrailingWhitespace": true,
-		"editor.formatOnSave": true,
-		"files.insertFinalNewline": true,
-		"python.formatting.provider": "black",
-		"python.linting.mypyEnabled": true,
-		"python.linting.lintOnSave": true,
-		"python.linting.pylintEnabled": true,
-		"python.linting.flake8Enabled": true,
-		"python.linting.flake8Args": [
-			"--ignore=W293, W503, W504, E402, F401, F403, E203",
-			"--max-line-length=99",
-			"--max-complexity=20"
-		],
-		"python.formatting.blackArgs": [
-			"--line-length=99"
-		],
-		"[python]": {
-			"editor.insertSpaces": true,
-			"editor.detectIndentation": true,
-			"editor.tabSize": 4,
-			"editor.codeActionsOnSave": {
-				"source.organizeImports": true
-			}
-		},
-		"python.testing.pytestArgs": [
-			"tests"
-		],
-		"python.testing.unittestEnabled": false,
-		"python.testing.pytestEnabled": true
-	},
-	"extensions": [
-		"ms-python.python",
-		"GitHub.copilot"
-	]
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"files.autoSave": "afterDelay",
+				"files.autoSaveDelay": 800,
+				"files.trimTrailingWhitespace": true,
+				"editor.formatOnSave": true,
+				"files.insertFinalNewline": true,
+				"python.formatting.provider": "black",
+				"python.linting.mypyEnabled": true,
+				"python.linting.lintOnSave": true,
+				"python.linting.pylintEnabled": true,
+				"python.linting.flake8Enabled": true,
+				"python.linting.flake8Args": [
+					"--ignore=W293, W503, W504, E402, F401, F403, E203",
+					"--max-line-length=99",
+					"--max-complexity=20"
+				],
+				"python.formatting.blackArgs": [
+					"--line-length=99"
+				],
+				"[python]": {
+					"editor.insertSpaces": true,
+					"editor.detectIndentation": true,
+					"editor.tabSize": 4,
+					"editor.codeActionsOnSave": {
+						"source.organizeImports": true
+					}
+				},
+				"python.testing.pytestArgs": [
+					"tests"
+				],
+				"python.testing.unittestEnabled": false,
+				"python.testing.pytestEnabled": true
+			},
+			"extensions": [
+				"ms-python.python",
+				"GitHub.copilot"
+			]
+		}
+	}
 }
