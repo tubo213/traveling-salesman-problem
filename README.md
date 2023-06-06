@@ -1,10 +1,10 @@
 # traveling-salesman-problem
 
-巡回セールスマン問題に対する解法を実装する.
+巡回セールスマン問題に対する解法を実装してみる.
 
 ## 利用可能な方策
 - RandomPolicy: ランダムに訪問
-- SolverPolicy: 厳密解
+- SolverPolicy: ソルバーを用いて最適解を求める
 - GreedyPolicy: 近くの点を逐次的に選択する
 - Annealing
     - TwoOptPolicy
@@ -16,7 +16,7 @@
 - テストデータ
     - 都市数: 50
     - サンプル数: 1000
-    
+
 ![](./resources/exp001/score.png)
 
 ![サンプル](./resources/exp001/samples.png)
