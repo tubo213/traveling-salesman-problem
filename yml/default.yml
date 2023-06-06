@@ -1,12 +1,12 @@
 exp_name: default
 output_dir:
   type: add
-  a: "/workspaces/traveling-salesman-problem/results/"
+  a: "/workspace/results/"
   b: "@/exp_name"
 seed: 100
 
 # data config
-num_nodes: 100
+num_nodes: 15
 dim_node: 2
 num_samples: 1000
 
@@ -29,8 +29,8 @@ pointernetpolicy:
     type: PointerNet
     input_size: "@/dim_node"
     hidden_size: 128
-    num_layers: 3
-    search_method: "greedy"
-  ckpt_path: "/workspaces/traveling-salesman-problem/results/pointernet/exp001/last.ckpt"
+    num_layers: 2
+    search_method: "probabilistic"
+  ckpt_path: "/workspace/results/pointernet/exp001/last.ckpt"
   device: cuda:0
 

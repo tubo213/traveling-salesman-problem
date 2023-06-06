@@ -1,7 +1,11 @@
 from src.generator import Generator
 from src.policy.pointernet.dataset import TSPDataset
 from src.policy.pointernet.datamodule import TSPDataModule
-from src.policy.pointernet.model import PointerNet, Critic
+from src.policy.pointernet.model import (
+    PointerNet,
+    PointerNetCritic,
+    TransformerCritic,
+)
 import torch.optim as optim
 from transformers import (
     get_cosine_schedule_with_warmup,
@@ -47,7 +51,8 @@ CONFIG_TYPES = {
     "Adafactor": Adafactor,
     # Model
     "PointerNet": PointerNet,
-    "Critic": Critic,
+    "PointerNetCritic": PointerNetCritic,
+    "TransformerCritic": TransformerCritic,
     # Scheduler
     "CosineWithWarmup": get_cosine_schedule_with_warmup,
     "LinearWithWarmup": get_linear_schedule_with_warmup,

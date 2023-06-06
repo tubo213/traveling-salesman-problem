@@ -1,7 +1,7 @@
 exp_name: test
 output_dir:
   type: add
-  a: "/workspaces/traveling-salesman-problem/results/pointernet/"
+  a: "/workspace/results/pointernet/"
   b: "@/exp_name"
 seed: 100
 num_workers: 24

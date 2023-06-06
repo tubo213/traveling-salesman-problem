@@ -3,14 +3,18 @@ from src.policy.base import BasePolicy
 import torch
 import numpy as np
 from pathlib import Path
+from typing import Optional
 
 
 class PointerNetPolicy(BasePolicy):
-    def __init__(self, model: PointerNet, ckpt_path: str, device: str = "cpu"):
+    def __init__(self, model: PointerNet, ckpt_path: Optional[str], device: str = "cpu"):
         super().__init__(seed=0)
         self.model = model
-        self.model.load_state_dict(self._parse_state_dict(ckpt_path))
-        self.ckpt_name = Path(ckpt_path).stem
+        if ckpt_path is not None:
+            self.model.load_state_dict(self._parse_state_dict(ckpt_path))
+            self.ckpt_name = Path(ckpt_path).stem
+        else:
+            self.ckpt_name = ""
         self.device = torch.device(device)
         self.model = self.model.to(self.device).eval()
 

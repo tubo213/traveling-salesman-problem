@@ -50,7 +50,11 @@ def calc_score(tour: np.ndarray, x: np.ndarray):
 
 
 def plot_results(
-    results: List[ExpResult], x: np.ndarray, num_samples: int = 4, save_dir: Optional[Path] = None
+    results: List[ExpResult],
+    x: np.ndarray,
+    num_samples: int = 3,
+    save_dir: Optional[Path] = None,
+    plot_tour: bool = False,
 ):
     # plot samples
     fig, axes = plt.subplots(
@@ -59,26 +63,26 @@ def plot_results(
     sample_idx = np.random.randint(len(x), size=num_samples)
     for i, sample_id in enumerate(sample_idx):
         for j, result in enumerate(results):
-            sample_x = x[sample_id]
+            sample = x[sample_id]
             sample_tour = result.tour[sample_id]
             sample_score = result.score[sample_id]
-            axes[i, j].plot(
-                sample_x[sample_tour, 0], sample_x[sample_tour, 1], marker=".", markersize=10
-            )
-            axes[i, j].set_title(
-                f"Policy: {result.policy_name} score: {sample_score:.2f} sample id: {sample_id} "
-            )
+            title = f"{result.policy_name} score={sample_score:.2f}"
+            if plot_tour:
+                sample_tour_str = ";".join([str(x) for x in sample_tour])
+                title += f"\n tour: {sample_tour_str}"
+            row = np.append(sample[sample_tour, 0], sample[sample_tour, 0][0])
+            col = np.append(sample[sample_tour, 1], sample[sample_tour, 1][0])
+            axes[i, j].plot(row, col, marker=".", markersize=10)
+            axes[i, j].set_title(title)
 
     if save_dir is not None:
         save_path = save_dir / "samples.png"
         fig.savefig(save_path, bbox_inches="tight")
 
     # plot score
-    fig, ax = plt.subplots(
-        1, 1, figsize=(10, 7), sharey=True, sharex=True
-    )
+    fig, ax = plt.subplots(1, 1, figsize=(10, 7), sharey=True, sharex=True)
     for i, result in enumerate(results):
-        label = f"{result.policy_name} score_mean={result.score.mean():.2f}"
+        label = f"{result.policy_name} score={result.score.mean():.2f}"
         ax.hist(result.score, label=label, alpha=0.7)
         ax.set_title("Score distribution")
         ax.legend()
