@@ -1,33 +1,33 @@
 # traveling-salesman-problem
 
-巡回セールスマン問題に対する解法を実装してみる.
+Implementation of algorithms for the Traveling Salesman Problem.
 
-## 利用可能な方策
-- RandomPolicy: ランダムに訪問
-- GreedyPolicy: 近くの点を逐次的に選択する
+## Available Policies
+- RandomPolicy: Visit points randomly.
+- GreedyPolicy: Visit the nearest point.
 - Annealing
-    - TwoOptPolicy: 2-opt法
-    - ThreeOptPolicy: 3-opt法
-- PointerNetPolicy: 深層強化学習, https://arxiv.org/abs/1611.09940
+    - TwoOptPolicy: 2-opt algorithm
+    - ThreeOptPolicy: 3-opt algorithm
+- PointerNetPolicy: Deep reinforcement learning method, https://arxiv.org/abs/1611.09940
 
 
-## 環境構築
+## Setup
 ### Requirements
 - docker
 - docker-compose
 
-cpu版
+For CPU version
 ```
 docker compose up traveling_salesman_problem-cpu
 ```
 
-gpu版
+For GPU version
 ```
 docker compose up traveling_salesman_problem-gpu
 ```
 
 ## Usage
-./ymlに設定ファイルを置く
+Place the configuration file in ./yml/
 
 ```yml
 # yml/sample.yml
@@ -56,13 +56,13 @@ pointernetpolicy:
   device: cuda:0
 ```
 
-比較実験の実行
+Run the comparative experiment:
 ```
 python -m bin.run --config_path ./yml/sample.yml
 ```
 
-### PointerNetの学習
-./yml/pointernet/に設定ファイルを置く
+### Training PointerNet
+Place the configuration file in ./yml/pointernet/
 
 ```yml
 # yml/pointernet/sample.yml
@@ -101,20 +101,20 @@ critic_optimizer:
   lr: 0.0003
   weight_decay: 0.0001
 ```
-学習を実行
+Run training:
 
 ```
 python -m bin.train_pointernet
 ```
 
-## 結果
-- テストデータ
-    - 都市数: 50
-    - サンプル数: 1000
+## Results
+- Test Data
+    - Number of Cities: 50
+    - Number of Samples: 1000
 
 ![](./resources/exp001/score.png)
 
-![サンプル](./resources/exp001/samples.png)
+![](./resources/exp001/samples.png)
 
 # Reference
 - Bello, I., Pham, H., Le, Q. V., Norouzi, M., & Bengio, S. (2016). Neural combinatorial optimization with reinforcement learning. arXiv preprint arXiv:1611.09940.
