@@ -6,6 +6,8 @@ from pathlib import Path
 import contextlib
 import joblib
 from tqdm.auto import tqdm
+import seaborn as sns
+import pandas as pd
 
 
 @dataclass(frozen=True)
@@ -63,14 +65,12 @@ def plot_results(
         fig.savefig(save_path, bbox_inches="tight")
 
     # plot score
-    fig, ax = plt.subplots(1, 1, figsize=(10, 7), sharey=True, sharex=True)
-    for i, result in enumerate(results):
-        label = f"{result.policy_name} score={result.score.mean():.2f}"
-        ax.hist(result.score, label=label, alpha=0.7)
-        ax.set_title("Score distribution", fontsize=30)
-        ax.set_ylabel("Frequency", fontsize=20)
-        ax.set_xlabel("Length of tour", fontsize=20)
-        ax.legend()
+    fig, ax = plt.subplots(1, 1, figsize=(10, 7))
+    policy_names = [result.policy_name for result in results]
+    score_df = pd.DataFrame(np.array([result.score for result in results]).T, columns=policy_names)
+    sns.boxplot(data=score_df, ax=ax)
+    ax.set_ylabel("Length of tour", fontsize=20)
+    ax.tick_params(labelsize=15)
 
     if save_dir is not None:
         save_path = save_dir / "score.png"
