@@ -1,5 +1,5 @@
 from src.utils import plot_results, calc_score, ExpResult
-from src.utils import load_config
+from src.config import load_config
 from pytorch_pfn_extras.config import Config
 import click
 from src.generator import Generator
@@ -7,8 +7,8 @@ from src.policy.base import BasePolicy
 from typing import List
 from pathlib import Path
 import logging
-import seaborn as sns
 import matplotlib.pyplot as plt
+from ttimer import get_timer
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s:%(name)s - %(message)s"
@@ -22,16 +22,17 @@ def run(cfg: Config):
     policies: List[BasePolicy] = cfg["/policies"]
     generator: Generator = cfg["/generator"]
     test_data = generator.get_data(cfg["/num_samples"], cfg["/seed"])
-
     results = []
-    for policy in policies:
-        policy_name = policy.__str__()
-        LOGGER.info(f"Running {policy_name}")
-        tour = policy.solve(test_data)
-        score = calc_score(tour, test_data)
-        LOGGER.info(f"Finished {policy_name} with score {score.mean():.2f}")
-        results.append(ExpResult(policy_name, tour, score))
-
+    timer = get_timer("timer")
+    with timer("Experiment"):
+        for policy in policies:
+            policy_name = policy.__str__()
+            with timer(policy_name):
+                tour = policy.solve(test_data)
+                score = calc_score(tour, test_data)
+            LOGGER.info(f"{policy_name} score: {score.mean():.2f}")
+            results.append(ExpResult(policy_name, tour, score))
+    LOGGER.info(timer.render())
     save_dir = Path(cfg["/output_dir"])
     plot_results(results, test_data, save_dir=save_dir)
 

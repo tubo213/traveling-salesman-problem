@@ -9,3 +9,5 @@ mypy
 PyYAML
 types-PyYAML
 click
+pulp
+ttimer
