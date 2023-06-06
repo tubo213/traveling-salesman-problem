@@ -5,7 +5,7 @@ from abc import abstractmethod
 from joblib import Parallel, delayed
 from typing import Optional
 import time
-from src.utils import calc_score
+from src.utils import calc_score, tqdm_joblib
 
 
 def transition_prob(crr_score, next_score, tmp):
@@ -37,12 +37,13 @@ class BaseAnnealing(BasePolicy):
     def solve(self, x):
         init_tour = self.init_policy.solve(x)
         # solve in parallel
-        results = Parallel(n_jobs=-1)(
-            [
-                delayed(self.solve_sample)(x_i, init_tour_i)
-                for x_i, init_tour_i in zip(x, init_tour)
-            ]
-        )
+        with tqdm_joblib(len(x), leave=False):
+            results = Parallel(n_jobs=-1)(
+                [
+                    delayed(self.solve_sample)(x_i, init_tour_i)
+                    for x_i, init_tour_i in zip(x, init_tour)
+                ]
+            )
         return np.array(results)
 
     def solve_sample(self, x_i, init_tour_i):
