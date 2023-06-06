@@ -1,0 +1,34 @@
+exp_name: exp002
+seed: 99
+
+# data config
+num_nodes: 50
+
+# train config
+batch_size: 32
+num_steps: 60000
+
+hidden_size: 128
+actor_model:
+  type: PointerNet
+  input_size: "@/dim_node"
+  hidden_size: "@/hidden_size"
+  num_layers: 2
+  search_method: "probabilistic"
+critic_model:
+  type: TransformerCritic
+  input_size: "@/dim_node"
+  hidden_size: "@/hidden_size"
+  num_layers: 2
+
+# optimizer
+actor_optimizer:
+  type: AdamW
+  params: {type: method_call, obj: "@/actor_model", method: "parameters"}
+  lr: 0.001
+  weight_decay: 0.001
+critic_optimizer:
+  type: AdamW
+  params: {type: method_call, obj: "@/critic_model", method: "parameters"}
+  lr: 0.0003
+  weight_decay: 0.0001
