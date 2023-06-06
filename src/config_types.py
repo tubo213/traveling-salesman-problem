@@ -18,6 +18,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 from torch.utils.data import DataLoader
 from src.policy import (
     TwoOptPolicy,
+    ThreeOptPolicy,
     RandomPolicy,
     PointerNetPolicy,
     GreedyPolicy,
@@ -34,6 +35,7 @@ CONFIG_TYPES = {
     "RandomPolicy": RandomPolicy,
     "GreedyPolicy": GreedyPolicy,
     "TwoOptPolicy": TwoOptPolicy,
+    "ThreeOptPolicy": ThreeOptPolicy,
     "PointerNetPolicy": PointerNetPolicy,
     # For PointerNet
     # Generator
