@@ -1,28 +1,11 @@
 from dataclasses import dataclass
 import numpy as np
-from typing import List
-from pytorch_pfn_extras.config import Config
-import yaml
-from typing import Optional
-from src.config_types import CONFIG_TYPES
+from typing import List, Optional
 import matplotlib.pyplot as plt
 from pathlib import Path
-
-
-def load_config(path: str, default_path: Optional[str] = None) -> Config:
-    with open(path) as f:
-        cfg: dict = yaml.safe_load(f)
-
-    if default_path is not None:
-        with open(default_path) as f:
-            default_cfg: dict = yaml.safe_load(f)
-        # merge default config
-        for k, v in default_cfg.items():
-            if k not in cfg:
-                print(f"used default {k}: {v}")
-                cfg[k] = v
-
-    return Config(cfg, types=CONFIG_TYPES)  # type: ignore
+import contextlib
+import joblib
+from tqdm.auto import tqdm
 
 
 @dataclass(frozen=True)
@@ -92,6 +75,25 @@ def plot_results(
     if save_dir is not None:
         save_path = save_dir / "score.png"
         fig.savefig(save_path, bbox_inches="tight")
+
+
+@contextlib.contextmanager
+def tqdm_joblib(total: Optional[int] = None, **kwargs):
+    pbar = tqdm(total=total, miniters=1, smoothing=0, **kwargs)
+
+    class TqdmBatchCompletionCallback(joblib.parallel.BatchCompletionCallBack):
+        def __call__(self, *args, **kwargs):
+            pbar.update(n=self.batch_size)
+            return super().__call__(*args, **kwargs)
+
+    old_batch_callback = joblib.parallel.BatchCompletionCallBack
+    joblib.parallel.BatchCompletionCallBack = TqdmBatchCompletionCallback
+
+    try:
+        yield pbar
+    finally:
+        joblib.parallel.BatchCompletionCallBack = old_batch_callback
+        pbar.close()
 
 
 if __name__ == "__main__":

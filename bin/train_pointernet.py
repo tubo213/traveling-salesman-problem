@@ -2,7 +2,7 @@ from pytorch_lightning import seed_everything
 from pytorch_pfn_extras.config import Config
 from src.policy.pointernet.datamodule import TSPDataModule
 from src.policy.pointernet.modelmodule import ActorCriticModule
-from src.utils import load_config
+from src.config import load_config
 import wandb
 import click
 from pathlib import Path
