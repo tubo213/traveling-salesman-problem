@@ -1,7 +1,7 @@
 version: '3.5'
 
 services:
-  traveling_salesman_problem:
+  traveling_salesman_problem-gpu:
     runtime: nvidia
     build: 
       context: .
@@ -9,6 +9,17 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
+    volumes:
+      - ./:/workspace
+      - /dev/shm:/dev/shm
+    working_dir: /workspace
+    ports: 
+      - "8888:8888"
+    tty: true
+  traveling_salesman_problem-cpu:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile-cpu
     volumes:
       - ./:/workspace
       - /dev/shm:/dev/shm
