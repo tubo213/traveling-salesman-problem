@@ -1,11 +1,12 @@
 from abc import ABCMeta, abstractmethod
 import numpy as np
-from pytorch_lightning import seed_everything
+import random
 
 
 class BasePolicy(metaclass=ABCMeta):
     def __init__(self, seed=0):
-        seed_everything(seed)
+        np.random.seed(seed)
+        random.seed(seed)
 
     @abstractmethod
     def solve(self, x: np.ndarray):
