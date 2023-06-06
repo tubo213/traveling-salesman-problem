@@ -1,0 +1,23 @@
+exp_name: exp002
+
+# data config
+num_nodes: 50
+
+# policies
+policies:
+  - type: GreedyPolicy
+  - "@/annealing/two_opt"
+  - "@/annealing/three_opt"
+  - "@/pointernetpolicy"
+
+# PointerNetPolicy
+pointernetpolicy:
+  type: PointerNetPolicy
+  model:
+    type: PointerNet
+    input_size: "@/dim_node"
+    hidden_size: 128
+    num_layers: 2
+    search_method: "greedy"
+  ckpt_path: /workspace/results/pointernet/exp002/last.ckpt
+  device: cuda:0

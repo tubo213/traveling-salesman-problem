@@ -34,6 +34,7 @@ def run(cfg: Config):
             results.append(ExpResult(policy_name, tour, score))
     LOGGER.info(timer.render())
     save_dir = Path(cfg["/output_dir"])
+    save_dir.mkdir(parents=True, exist_ok=True)
     plot_results(results, test_data, save_dir=save_dir)
 
 
