@@ -1,0 +1,19 @@
+seed: 342
+num_trials: 100
+num_samples: 500
+
+# generator
+generator:
+  type: Generator
+  num_nodes: 50
+  dim_node: 2
+
+# policy
+timelimit: 0.5
+start_tmp: 0.01
+end_tmp: 0.001
+policy:
+  type: TwoOptPolicy
+  start_tmp: "@/start_tmp"
+  end_tmp: "@/end_tmp"
+  timelimit: "@/timelimit"

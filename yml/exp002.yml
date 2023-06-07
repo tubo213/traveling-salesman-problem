@@ -10,6 +10,22 @@ policies:
   - "@/annealing/three_opt"
   - "@/pointernetpolicy"
 
+# Annealing
+annealing:
+  timelimit: 1
+  start_tmp: 0.045
+  end_tmp: 0.00045
+  two_opt:
+    type: TwoOptPolicy
+    start_tmp: "@/annealing/start_tmp"
+    end_tmp: "@/annealing/end_tmp"
+    timelimit: "@/annealing/timelimit"
+  three_opt:
+    type: ThreeOptPolicy
+    start_tmp: "@/annealing/start_tmp"
+    end_tmp: "@/annealing/end_tmp"
+    timelimit: "@/annealing/timelimit"
+
 # PointerNetPolicy
 pointernetpolicy:
   type: PointerNetPolicy
