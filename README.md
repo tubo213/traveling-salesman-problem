@@ -8,7 +8,9 @@ Implementation of algorithms for the Traveling Salesman Problem.
 - Annealing
     - TwoOptPolicy: 2-opt algorithm
     - ThreeOptPolicy: 3-opt algorithm
-- PointerNetPolicy: Deep reinforcement learning method for the TSP.
+- [PointerNetPolicy]((https://arxiv.org/abs/1611.09940)): Deep reinforcement learning method for the TSP.
+  - PointerNet: Vanilla PointerNet
+  - TransformerPointerNet: Transformer-based PointerNet
 
 ## Setup
 ### Requirements
