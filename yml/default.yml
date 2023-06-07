@@ -47,6 +47,7 @@ pointernetpolicy:
     hidden_size: 128
     num_layers: 2
     search_method: "probabilistic"
+    num_glimpses: 1
   ckpt_path: "/workspace/results/pointernet/exp001/last.ckpt"
   device: cuda:0
 

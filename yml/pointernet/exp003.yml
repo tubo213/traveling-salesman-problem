@@ -1,12 +1,12 @@
-exp_name: exp002
+exp_name: exp003
 seed: 99
 
 # data config
 num_nodes: 50
 
 # train config
-batch_size: 32
-num_steps: 60000
+batch_size: 128
+num_steps: 30000
 
 hidden_size: 128
 actor_model:
@@ -15,7 +15,7 @@ actor_model:
   hidden_size: "@/hidden_size"
   num_layers: 2
   search_method: "probabilistic"
-  num_glimpses: 0
+  num_glimpses: 1
 critic_model:
   type: TransformerCritic
   input_size: "@/dim_node"
@@ -26,8 +26,8 @@ critic_model:
 actor_optimizer:
   type: AdamW
   params: {type: method_call, obj: "@/actor_model", method: "parameters"}
-  lr: 0.001
-  weight_decay: 0.001
+  lr: 0.0003
+  weight_decay: 0.0001
 critic_optimizer:
   type: AdamW
   params: {type: method_call, obj: "@/critic_model", method: "parameters"}

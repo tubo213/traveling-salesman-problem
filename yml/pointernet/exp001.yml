@@ -15,6 +15,7 @@ actor_model:
   hidden_size: "@/hidden_size"
   num_layers: 2
   search_method: "probabilistic"
+  num_glimpses: 0
 critic_model:
   type: TransformerCritic
   input_size: "@/dim_node"

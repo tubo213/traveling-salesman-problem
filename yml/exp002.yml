@@ -35,5 +35,6 @@ pointernetpolicy:
     hidden_size: 128
     num_layers: 2
     search_method: "greedy"
+    num_glimpses: 0
   ckpt_path: /workspace/results/pointernet/exp002/last.ckpt
   device: cuda:0
