@@ -217,7 +217,6 @@ class TransformerCritic(nn.Module):
         """
         x: [N, seq_len, input_size]
         """
-        # r, _ = self.encoder(x)
         out = self.encoder(x)
         out = self.fc(out.mean(dim=1))
         return out
