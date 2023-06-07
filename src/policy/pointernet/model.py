@@ -332,7 +332,6 @@ class TransformerCritic(nn.Module):
         self.fc = nn.Linear(hidden_size, 1)
 
     def forward(self, x):
-        x = self.fc(x)
         x = self.encoder(x).mean(dim=1)  # [N, hidden_size]
         x = self.fc(x)
 
