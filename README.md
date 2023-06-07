@@ -14,6 +14,7 @@ Implementation of algorithms for the Traveling Salesman Problem.
 ### Requirements
 - docker
 - docker-compose
+- nvidia-docker2 (for GPU version)
 
 For CPU version
 ```
