@@ -42,7 +42,9 @@ class TransformerEncoder(nn.Module):
 
 
 class PointerNetDecoder(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers, search_method="probabilistic"):
+    def __init__(
+        self, input_size, hidden_size, num_layers, search_method="probabilistic", num_glimpses=1
+    ):
         super().__init__()
         self.lstm = nn.LSTM(
             input_size=input_size,
@@ -51,6 +53,8 @@ class PointerNetDecoder(nn.Module):
             batch_first=True,
         )
         self.attn = PointerNetAttention(hidden_size)
+        self.glimpse_attn = PointerNetAttention(hidden_size)
+        self.num_glimpses = num_glimpses
         self.search_method = search_method
         self.bos = nn.Parameter(torch.randn(1, 1, input_size))
         self._initialize_weights()
@@ -76,10 +80,14 @@ class PointerNetDecoder(nn.Module):
         h, c = hidden
         for i in range(r.shape[1]):
             output, (h, c) = self.lstm(prev_node, (h, c))
+            q = output.squeeze()  # [N, hidden_size]
 
-            # pointer
-            query = output.squeeze()  # [N, hidden_size]
-            logits = self.attn(r, query, mask)  # [N, seq_len]
+            # glimpse
+            for _ in range(self.num_glimpses):
+                q = self.glimpse(r, q, mask)
+
+            # attention
+            _, logits = self.attn(r, q, mask)  # [N, seq_len]
             log_prob = F.log_softmax(logits, dim=1)
 
             # sample next node
@@ -94,6 +102,14 @@ class PointerNetDecoder(nn.Module):
         pred_tour = torch.stack(pred_tour, dim=1)  # [N, seq_len]
 
         return pred_tour, log_ll
+
+    def glimpse(self, r, q, mask):
+        r, logits = self.glimpse_attn(r, q, mask)  # [N, seq_len, hidden], [N, seq_len]
+        r = r.transpose(1, 2)  # [N, hidden, seq_len]
+        prob = F.softmax(logits, dim=1).unsqueeze(2)  # [N, seq_len, 1]
+        q = torch.bmm(r, prob).squeeze(2)  # [N, hidden]
+
+        return q
 
     def select_node(self, log_prob):
         if self.search_method == "greedy":
@@ -119,7 +135,6 @@ class PointerNetAttention(nn.Module):
         self.v = nn.Parameter(torch.zeros([1, hidden_size], dtype=torch.float), requires_grad=True)
         self._initialize_weights()
         self.inf = 1e7
-        self.clip_logit = 10
 
     def _initialize_weights(self, init_min=-0.08, init_max=0.08):
         for param in self.parameters():
@@ -135,20 +150,31 @@ class PointerNetAttention(nn.Module):
         r = torch.matmul(r, self.w_ref)
         # [N, hidden_size] * [hidden_size, hidden_size] = [N, hidden_size]
         q = torch.matmul(q, self.w_q)
-        score = (self.v * F.tanh(r + q[:, None, :])).sum(dim=-1)  # [N, seq_len]
+        logits = (self.v * F.tanh(r + q[:, None, :])).sum(dim=-1)  # [N, seq_len]
         # mask
-        score = score - self.inf * mask
+        logits = logits - self.inf * mask
 
-        return score
+        return r, logits
 
 
 class PointerNet(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers, search_method="probabilistic"):
+    def __init__(
+        self,
+        input_size,
+        hidden_size,
+        num_layers,
+        search_method="probabilistic",
+        num_glimpses: int = 1,
+    ):
         super().__init__()
         self.emb = nn.Linear(input_size, hidden_size)
         self.encoder = PointerNetEncoder(hidden_size, hidden_size, num_layers)
         self.decoder = PointerNetDecoder(
-            hidden_size, hidden_size, num_layers, search_method=search_method
+            hidden_size,
+            hidden_size,
+            num_layers,
+            search_method=search_method,
+            num_glimpses=num_glimpses,
         )
 
     def forward(self, x):
