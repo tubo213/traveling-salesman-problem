@@ -232,7 +232,7 @@ class TransformerPointerNet(nn.Module):
         hidden_size,
         num_layers,
         search_method="probabilistic",
-        num_glimpses=1,
+        num_glimpses=0,
         use_tanh=False,
     ):
         super().__init__()

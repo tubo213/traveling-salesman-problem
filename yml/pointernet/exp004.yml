@@ -6,7 +6,7 @@ num_nodes: 50
 
 # train config
 batch_size: 32
-num_steps: 10000
+num_steps: 30000
 
 hidden_size: 128
 actor_model:
@@ -15,6 +15,7 @@ actor_model:
   hidden_size: "@/hidden_size"
   num_layers: 3
   search_method: "probabilistic"
+  num_glimpses: 0
 critic_model:
   type: TransformerCritic
   input_size: "@/dim_node"
