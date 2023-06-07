@@ -5,31 +5,44 @@ seed: 99
 num_nodes: 50
 
 # train config
-batch_size: 32
-num_steps: 30000
+batch_size: 200
+num_steps: 10000
 
 hidden_size: 128
 actor_model:
   type: TransformerPointerNet
   input_size: "@/dim_node"
   hidden_size: "@/hidden_size"
-  num_layers: 3
+  num_layers: 5
   search_method: "probabilistic"
-  num_glimpses: 0
+  num_glimpses: 1
+  use_tanh: true
 critic_model:
   type: TransformerCritic
   input_size: "@/dim_node"
   hidden_size: "@/hidden_size"
-  num_layers: 2
+  num_layers: 1
+
+# scheduler
+actor_scheduler:
+  type: CosineWithWarmup
+  optimizer: "@/actor_optimizer"
+  num_warmup_steps: 0
+  num_training_steps: "@/num_steps"
+critic_scheduler:
+  type: CosineWithWarmup
+  optimizer: "@/critic_optimizer"
+  num_warmup_steps: 0
+  num_training_steps: "@/num_steps"
 
 # optimizer
 actor_optimizer:
   type: AdamW
   params: {type: method_call, obj: "@/actor_model", method: "parameters"}
-  lr: 0.0002
+  lr: 0.0003
   weight_decay: 0.0001
 critic_optimizer:
   type: AdamW
   params: {type: method_call, obj: "@/critic_model", method: "parameters"}
-  lr: 0.0002
+  lr: 0.0003
   weight_decay: 0.0001

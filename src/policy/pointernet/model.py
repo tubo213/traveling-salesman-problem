@@ -207,15 +207,13 @@ class PositionalEncoding(nn.Module):
     def __init__(self, dim, dropout=0.1, max_len=1000, batch_first=True):
         super().__init__()
         self.dropout = nn.Dropout(p=dropout)
-
         position = torch.arange(max_len).unsqueeze(1)
         div_term = torch.exp(torch.arange(0, dim, 2) * (-math.log(10000.0) / dim))
         pe = torch.zeros(max_len, dim)
         pe[:, 0::2] = torch.sin(position * div_term)
         pe[:, 1::2] = torch.cos(position * div_term)
-        self.batch_first = batch_first
-
         self.register_buffer("pe", pe)
+        self.batch_first = batch_first
 
     def forward(self, x):
         if self.batch_first:
@@ -232,12 +230,12 @@ class TransformerPointerNet(nn.Module):
         hidden_size,
         num_layers,
         search_method="probabilistic",
-        num_glimpses=0,
+        num_glimpses=1,
         use_tanh=False,
     ):
         super().__init__()
-        self.emb = nn.Linear(input_size, hidden_size)
-        self.decoder_enb = nn.Sequential(
+        self.fc = nn.Linear(input_size, hidden_size)
+        self.decoder_emb = nn.Sequential(
             nn.Linear(hidden_size, hidden_size),
             nn.ReLU(),
             PositionalEncoding(hidden_size),
@@ -250,7 +248,6 @@ class TransformerPointerNet(nn.Module):
             nn.TransformerDecoderLayer(hidden_size, nhead=8, batch_first=True),
             num_layers=num_layers,
         )
-
         self.attn = PointerNetAttention(hidden_size, use_tanh=use_tanh)
         self.glimpse_attn = PointerNetAttention(hidden_size, use_tanh=False)
         self.num_glimpses = num_glimpses
@@ -265,27 +262,23 @@ class TransformerPointerNet(nn.Module):
     def forward(self, x):
         """
         x: [N, seq_len, input_size] (decoder input)
+        r: [N, seq_len, hidden_size] (encoder output)
         """
         device = x.device
-        bs, seq_len, _ = x.shape
+        bs, num_nodes, _ = x.shape
+        idx = torch.arange(bs, device=device)
+        mask = torch.zeros(bs, num_nodes, dtype=torch.float, device=device)
 
-        # embedding
-        x = self.emb(x)
-
-        # encoder
+        # transformer encoder
+        x = self.fc(x)
         memory = self.transformer_encoder(x)  # [N, seq_len, hidden_size]
 
-        # decoder
-        idx = torch.arange(bs, device=device)
-        mask = torch.zeros(bs, seq_len, dtype=torch.float, device=device)
         pred_tour = []
         log_ll = torch.zeros(bs, device=device)
         tgt = self.bos.expand(bs, 1, -1).to(device)  # [N, 1, input_size]
-        for i in range(seq_len):
-            embed_tgt = self.decoder_enb(tgt)  # [N, num_visited_nodes, hidden_size]
-            output = self.transformer_decoder(
-                embed_tgt, memory
-            )  # [N, num_visited_nodes, hidden_size]
+        for i in range(num_nodes):
+            embed_tgt = self.decoder_emb(tgt)  # [N, seq_len, hidden_size]
+            output = self.transformer_decoder(embed_tgt, memory)  # [N, seq_len, hidden_size]
             q = output[:, -1, :].squeeze()  # [N, hidden_size]
 
             # glimpse
@@ -332,10 +325,12 @@ class TransformerCritic(nn.Module):
         self.fc = nn.Linear(hidden_size, 1)
 
     def forward(self, x):
-        x = self.encoder(x).mean(dim=1)  # [N, hidden_size]
-        x = self.fc(x)
-
-        return x
+        """
+        x: [N, seq_len, input_size]
+        """
+        out = self.encoder(x)
+        out = self.fc(out.mean(dim=1))
+        return out
 
 
 if __name__ == "__main__":
