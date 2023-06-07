@@ -13,7 +13,7 @@ actor_model:
   type: TransformerPointerNet
   input_size: "@/dim_node"
   hidden_size: "@/hidden_size"
-  num_layers: 5
+  num_layers: 3
   search_method: "probabilistic"
 critic_model:
   type: TransformerCritic

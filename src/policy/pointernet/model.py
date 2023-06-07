@@ -204,18 +204,33 @@ class PointerNetCritic(nn.Module):
 
 
 class PositionalEncoding(nn.Module):
-    def __init__(self, dim, dropout=0.1, max_len=1000):
+    def __init__(
+        self, d_model: int, dropout: float = 0.1, max_len: int = 1000, batch_first: bool = True
+    ):
         super().__init__()
         self.dropout = nn.Dropout(p=dropout)
+
         position = torch.arange(max_len).unsqueeze(1)
-        div_term = torch.exp(torch.arange(0, dim, 2) * (-math.log(10000.0) / dim))
-        pe = torch.zeros(max_len, 1, dim)
+        div_term = torch.exp(torch.arange(0, d_model, 2) * (-math.log(10000.0) / d_model))
+        pe = torch.zeros(max_len, 1, d_model)
         pe[:, 0, 0::2] = torch.sin(position * div_term)
         pe[:, 0, 1::2] = torch.cos(position * div_term)
+        self.batch_first = batch_first
+        if self.batch_first:
+            pe = pe.transpose(0, 1)  # [1, max_len, d_model]
+
         self.register_buffer("pe", pe)
 
-    def forward(self, x):
-        x = x + self.pe[: x.size(0)]
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Arguments:
+            x: Tensor,
+               [seq_len, batch_size, embedding_dim] or [batch_size, seq_len, embedding_dim]
+        """
+        if self.batch_first:
+            x = x + self.pe[:, : x.size(1), :]
+        else:
+            x = x + self.pe[: x.size(0)]
         return self.dropout(x)
 
 
@@ -229,7 +244,7 @@ class TransformerPointerNet(nn.Module):
     ):
         super().__init__()
         self.fc = nn.Linear(input_size, hidden_size)
-        self.pe = PositionalEncoding(hidden_size)
+        self.pe = PositionalEncoding(hidden_size, batch_first=True)
         transformer_encoder_layers = nn.TransformerEncoderLayer(
             hidden_size, nhead=8, batch_first=True
         )
@@ -242,6 +257,7 @@ class TransformerPointerNet(nn.Module):
         self.transformer_decoder = nn.TransformerDecoder(
             transformer_decoder_layers, num_layers=num_layers
         )
+        self.to_logits = nn.Linear(hidden_size, 1)
         self.search_method = search_method
         self.bos = nn.Parameter(torch.randn(1, 1, hidden_size))
         self._initialize_weights()
@@ -268,9 +284,9 @@ class TransformerPointerNet(nn.Module):
             emb = self.pe(encoder_input)  # [N, num_visited_node, input_size]
             memory = self.transformer_encoder(emb)
             output = self.transformer_decoder(tgt, memory)  # [N, seq_len, hidden_size]
-            logits = output.mean(dim=-1)  # [N, seq_len]
+            logits = self.to_logits(output).squeeze()  # [N, seq_len]
             logits = logits - 1e6 * mask  # mask out visited nodes
-            # logits = 10 * torch.tanh(logits)  # scale logits
+            logits = 10 * torch.tanh(logits)  # scale logits
             log_prob = F.log_softmax(logits, dim=1)
 
             # sample next node
