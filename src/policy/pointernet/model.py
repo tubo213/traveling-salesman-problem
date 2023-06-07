@@ -52,8 +52,8 @@ class PointerNetDecoder(nn.Module):
             num_layers=num_layers,
             batch_first=True,
         )
-        self.attn = PointerNetAttention(hidden_size)
-        self.glimpse_attn = PointerNetAttention(hidden_size)
+        self.attn = PointerNetAttention(hidden_size, use_tanh=True)
+        self.glimpse_attn = PointerNetAttention(hidden_size, use_tanh=False)
         self.num_glimpses = num_glimpses
         self.search_method = search_method
         self.bos = nn.Parameter(torch.randn(1, 1, input_size))
@@ -123,9 +123,11 @@ class PointerNetDecoder(nn.Module):
 
 
 class PointerNetAttention(nn.Module):
-    def __init__(self, hidden_size):
+    def __init__(self, hidden_size, use_tanh=False, clip=10):
         super().__init__()
         self.hidden_size = hidden_size
+        self.use_tanh = use_tanh
+        self.clip = clip
         self.w_ref = nn.Parameter(
             torch.zeros([1, hidden_size, hidden_size], dtype=torch.float), requires_grad=True
         )
@@ -153,6 +155,9 @@ class PointerNetAttention(nn.Module):
         logits = (self.v * F.tanh(r + q[:, None, :])).sum(dim=-1)  # [N, seq_len]
         # mask
         logits = logits - self.inf * mask
+
+        if self.use_tanh:
+            logits = self.clip * F.tanh(logits)
 
         return r, logits
 
