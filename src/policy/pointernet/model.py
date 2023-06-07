@@ -203,20 +203,6 @@ class PointerNetCritic(nn.Module):
         return out
 
 
-class TransformerEncoder(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers):
-        super().__init__()
-        self.fc = nn.Linear(input_size, hidden_size)
-        layers = nn.TransformerEncoderLayer(hidden_size, nhead=8, batch_first=True)
-        self.transformer_encoder = nn.TransformerEncoder(layers, num_layers=num_layers)
-
-    def forward(self, x):
-        x = self.fc(x)
-        x = self.transformer_encoder(x)
-
-        return x
-
-
 class PositionalEncoding(nn.Module):
     def __init__(self, dim, dropout=0.1, max_len=1000):
         super().__init__()
@@ -233,67 +219,67 @@ class PositionalEncoding(nn.Module):
         return self.dropout(x)
 
 
-class TransformerDecoder(nn.Module):
+class TransformerPointerNet(nn.Module):
     def __init__(
         self,
         input_size,
         hidden_size,
         num_layers,
         search_method="probabilistic",
-        num_glimpses=1,
-        use_tanh=False,
     ):
         super().__init__()
-        self.enb = nn.Sequential(
-            nn.Linear(input_size, hidden_size),
-            nn.ReLU(),
-            PositionalEncoding(hidden_size),
+        self.fc = nn.Linear(input_size, hidden_size)
+        self.pe = PositionalEncoding(hidden_size)
+        transformer_encoder_layers = nn.TransformerEncoderLayer(
+            hidden_size, nhead=8, batch_first=True
         )
-        transformer_layers = nn.TransformerDecoderLayer(hidden_size, nhead=8, batch_first=True)
-        self.transformer_decoder = nn.TransformerDecoder(transformer_layers, num_layers=num_layers)
-        self.attn = PointerNetAttention(hidden_size, use_tanh=use_tanh)
-        self.glimpse_attn = PointerNetAttention(hidden_size, use_tanh=False)
-        self.num_glimpses = num_glimpses
+        self.transformer_encoder = nn.TransformerEncoder(
+            transformer_encoder_layers, num_layers=num_layers
+        )
+        transformer_decoder_layers = nn.TransformerDecoderLayer(
+            hidden_size, nhead=8, batch_first=True
+        )
+        self.transformer_decoder = nn.TransformerDecoder(
+            transformer_decoder_layers, num_layers=num_layers
+        )
         self.search_method = search_method
-        self.bos = nn.Parameter(torch.randn(1, 1, input_size))
+        self.bos = nn.Parameter(torch.randn(1, 1, hidden_size))
         self._initialize_weights()
 
     def _initialize_weights(self, init_min=-0.08, init_max=0.08):
         for param in self.parameters():
             nn.init.uniform_(param.data, init_min, init_max)
 
-    def forward(self, x, r):
+    def forward(self, x):
         """
-        x: [N, seq_len, input_size] (decoder input)
-        r: [N, seq_len, hidden_size] (encoder output)
+        x: [N, seq_len, input_size]
         """
-        device = r.device
-        bs = r.shape[0]
-        num_nodes = r.shape[1]
+        device = x.device
+        bs = x.shape[0]
+        num_nodes = x.shape[1]
         idx = torch.arange(bs, device=device)
         mask = torch.zeros(bs, num_nodes, dtype=torch.float, device=device)
-
         pred_tour = []
         log_ll = torch.zeros(bs, device=device)
-        tgt = self.bos.expand(bs, 1, -1).to(device)  # [N, 1, input_size]
-        for i in range(r.shape[1]):
-            embed_tgt = self.enb(tgt)  # [N, seq_len, hidden_size]
-            output = self.transformer_decoder(embed_tgt, r)  # [N, seq_len, hidden_size]
-            q = output[:, -1, :].squeeze()  # [N, hidden_size]
 
-            # glimpse
-            for _ in range(self.num_glimpses):
-                q = self.glimpse(r, q, mask)
-
-            # attention
-            _, logits = self.attn(r, q, mask)  # [N, seq_len]
+        tgt = self.fc(x)  # [N, num_nodes, hidden_size]
+        encoder_input = self.bos.expand(bs, 1, -1).to(device)  # [N, 1, input_size]
+        for i in range(x.shape[1]):
+            emb = self.pe(encoder_input)  # [N, num_visited_node, input_size]
+            memory = self.transformer_encoder(emb)
+            output = self.transformer_decoder(tgt, memory)  # [N, seq_len, hidden_size]
+            logits = output.mean(dim=-1)  # [N, seq_len]
+            logits = logits - 1e6 * mask  # mask out visited nodes
+            # logits = 10 * torch.tanh(logits)  # scale logits
             log_prob = F.log_softmax(logits, dim=1)
 
             # sample next node
             position = select_node(log_prob, self.search_method)
             pred_tour.append(position)
-            pred_node = x[idx, position, :][:, None, :]
-            tgt = torch.cat([tgt, pred_node], dim=1)
+            pred_node = tgt[idx, position, :][:, None, :]
+            encoder_input = torch.cat(
+                [encoder_input, pred_node], dim=1
+            )  # [N, num_visited_node, input_size]
             log_ll += log_prob[idx, position]
 
             # update mask
@@ -303,60 +289,21 @@ class TransformerDecoder(nn.Module):
 
         return pred_tour, log_ll
 
-    def glimpse(self, r, q, mask):
-        r, logits = self.glimpse_attn(r, q, mask)  # [N, seq_len, hidden], [N, seq_len]
-        r = r.transpose(1, 2)  # [N, hidden, seq_len]
-        prob = F.softmax(logits, dim=1).unsqueeze(2)  # [N, seq_len, 1]
-        q = torch.bmm(r, prob).squeeze(2)  # [N, hidden]
-
-        return q
-
-
-class TransformerPointerNet(nn.Module):
-    def __init__(
-        self,
-        input_size,
-        hidden_size,
-        num_layers,
-        search_method="probabilistic",
-        num_glimpses: int = 1,
-        use_tanh: bool = False,
-    ):
-        super().__init__()
-        self.emb = nn.Linear(input_size, hidden_size)
-        self.encoder = TransformerEncoder(hidden_size, hidden_size, num_layers)
-        self.decoder = TransformerDecoder(
-            hidden_size,
-            hidden_size,
-            num_layers,
-            search_method=search_method,
-            num_glimpses=num_glimpses,
-            use_tanh=use_tanh,
-        )
-
-    def forward(self, x):
-        """
-        x: [N, seq_len, input_size]
-        """
-        x = self.emb(x)
-        r = self.encoder(x)
-        pred_tour, log_ll = self.decoder(x, r)
-        return pred_tour, log_ll
-
 
 class TransformerCritic(nn.Module):
     def __init__(self, input_size, hidden_size, num_layers):
         super().__init__()
-        self.encoder = TransformerEncoder(input_size, hidden_size, num_layers)
-        self.fc = nn.Linear(hidden_size, 1)
+        self.fc = nn.Linear(input_size, hidden_size)
+        layers = nn.TransformerEncoderLayer(hidden_size, nhead=8, batch_first=True)
+        self.transformer_encoder = nn.TransformerEncoder(layers, num_layers=num_layers)
+        self.predictor = nn.Linear(hidden_size, 1)
 
     def forward(self, x):
-        """
-        x: [N, seq_len, input_size]
-        """
-        out = self.encoder(x)
-        out = self.fc(out.mean(dim=1))
-        return out
+        x = self.fc(x)
+        x = self.transformer_encoder(x).mean(dim=1)  # [N, hidden_size]
+        x = self.predictor(x)
+
+        return x
 
 
 if __name__ == "__main__":

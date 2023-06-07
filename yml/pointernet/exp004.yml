@@ -6,17 +6,15 @@ num_nodes: 50
 
 # train config
 batch_size: 32
-num_steps: 30000
+num_steps: 10000
 
 hidden_size: 128
 actor_model:
   type: TransformerPointerNet
   input_size: "@/dim_node"
   hidden_size: "@/hidden_size"
-  num_layers: 2
+  num_layers: 5
   search_method: "probabilistic"
-  num_glimpses: 0
-  use_tanh: false
 critic_model:
   type: TransformerCritic
   input_size: "@/dim_node"
