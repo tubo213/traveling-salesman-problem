@@ -8,8 +8,7 @@ Implementation of algorithms for the Traveling Salesman Problem.
 - Annealing
     - TwoOptPolicy: 2-opt algorithm
     - ThreeOptPolicy: 3-opt algorithm
-- PointerNetPolicy: Deep reinforcement learning method, https://arxiv.org/abs/1611.09940
-
+- PointerNetPolicy: Deep reinforcement learning method for the TSP.
 
 ## Setup
 ### Requirements
@@ -28,6 +27,11 @@ docker compose up traveling_salesman_problem-gpu
 
 ## Usage
 Place the configuration file in ./yml/
+
+The configuration file is created for Config of pytorch-pfn-extras.
+See here for more details.
+- [pytorch-pfn-extras Config system](https://pytorch-pfn-extras.readthedocs.io/en/latest/user_guide/config.html#callable-substitution)
+- [みんなが知らない pytorch-pfn-extras](https://www.slideshare.net/TakujiTahara/20210618-lt-pyrotch-pfn-extras-and-config-systems-tawara)
 
 ```yml
 # yml/sample.yml
@@ -117,4 +121,4 @@ python -m bin.train_pointernet
 ![](./resources/exp001/samples.png)
 
 # Reference
-- Bello, I., Pham, H., Le, Q. V., Norouzi, M., & Bengio, S. (2016). Neural combinatorial optimization with reinforcement learning. arXiv preprint arXiv:1611.09940.
+- [Bello, I., Pham, H., Le, Q. V., Norouzi, M., & Bengio, S. (2016). Neural combinatorial optimization with reinforcement learning. arXiv preprint arXiv:1611.09940.](https://arxiv.org/abs/1611.09940)
