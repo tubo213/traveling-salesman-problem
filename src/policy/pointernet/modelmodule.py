@@ -79,10 +79,12 @@ class ActorCriticModule(LightningModule):
         x_start = x[idx, tour[:, 0]]
         x_end = x[idx, tour[:, -1]]
 
-        d_left_right = torch.norm(x_left - x_right, dim=-1, p=2).sum(dim=-1)  # (B,)
-        d_end_start = torch.norm(x_end - x_start, dim=-1, p=2)  # (B,)
+        d_start_end = torch.norm(x_left - x_right, dim=-1, p=2).sum(
+            dim=-1
+        )  # start to end distance
+        d_end_start = torch.norm(x_end - x_start, dim=-1, p=2)  # end to start distance
 
-        return d_left_right + d_end_start
+        return d_start_end + d_end_start
 
     def configure_optimizers(self):
         actor_opt = self.cfg["/actor_optimizer"]

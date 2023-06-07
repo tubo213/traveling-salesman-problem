@@ -207,6 +207,7 @@ class PositionalEncoding(nn.Module):
     def __init__(self, dim, dropout=0.1, max_len=1000, batch_first=True):
         super().__init__()
         self.dropout = nn.Dropout(p=dropout)
+
         position = torch.arange(max_len).unsqueeze(1)
         div_term = torch.exp(torch.arange(0, dim, 2) * (-math.log(10000.0) / dim))
         pe = torch.zeros(max_len, dim)
@@ -331,12 +332,11 @@ class TransformerCritic(nn.Module):
         self.fc = nn.Linear(hidden_size, 1)
 
     def forward(self, x):
-        """
-        x: [N, seq_len, input_size]
-        """
-        out = self.encoder(x)
-        out = self.fc(out.mean(dim=1))
-        return out
+        x = self.fc(x)
+        x = self.transformer_encoder(x).mean(dim=1)  # [N, hidden_size]
+        x = self.predictor(x)
+
+        return x
 
 
 if __name__ == "__main__":
