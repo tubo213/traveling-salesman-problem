@@ -34,7 +34,7 @@ See here for more details.
 - [pytorch-pfn-extras Config system](https://pytorch-pfn-extras.readthedocs.io/en/latest/user_guide/config.html#callable-substitution)
 - [みんなが知らない pytorch-pfn-extras](https://www.slideshare.net/TakujiTahara/20210618-lt-pyrotch-pfn-extras-and-config-systems-tawara)
 
-```yml
+```yaml
 # yml/sample.yml
 exp_name: exp001
 
@@ -63,13 +63,13 @@ pointernetpolicy:
 
 Run the comparative experiment:
 ```
-python -m bin.run --config_path ./yml/sample.yml
+python -m bin.run -c ./yml/sample.yml
 ```
 
 ### Training PointerNet
 Place the configuration file in ./yml/pointernet/
 
-```yml
+```yaml
 # yml/pointernet/sample.yml
 exp_name: exp001
 seed: 99
@@ -109,7 +109,38 @@ critic_optimizer:
 Run training:
 
 ```
-python -m bin.train_pointernet
+python -m bin.train_pointernet -c ./yml/pointernet/sample.yml
+```
+
+### Hyperparameter Search for Annealing
+Place the configuration file in ./yml/annealing/
+
+```yaml
+# yml/tune/sample.yml
+seed: 342
+num_trials: 100
+num_samples: 500
+
+# generator
+generator:
+  type: Generator
+  num_nodes: 50
+  dim_node: 2
+
+# policy
+timelimit: 0.5
+start_tmp: 0.01
+end_tmp: 0.001
+policy:
+  type: TwoOptPolicy
+  start_tmp: "@/start_tmp"
+  end_tmp: "@/end_tmp"
+  timelimit: "@/timelimit"
+```
+
+Run hyperparameter search:
+```
+python -m bin.tune_sa -c ./yml/tune/sample.yml
 ```
 
 ## Results
