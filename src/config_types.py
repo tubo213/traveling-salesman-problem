@@ -3,6 +3,7 @@ from src.policy.pointernet.dataset import TSPDataset
 from src.policy.pointernet.datamodule import TSPDataModule
 from src.policy.pointernet.model import (
     PointerNet,
+    TransformerPointerNet,
     PointerNetCritic,
     TransformerCritic,
 )
@@ -53,6 +54,7 @@ CONFIG_TYPES = {
     "Adafactor": Adafactor,
     # Model
     "PointerNet": PointerNet,
+    "TransformerPointerNet": TransformerPointerNet,
     "PointerNetCritic": PointerNetCritic,
     "TransformerCritic": TransformerCritic,
     # Scheduler
