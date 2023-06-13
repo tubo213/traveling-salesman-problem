@@ -1,7 +1,7 @@
 exp_name: default
 output_dir:
   type: add
-  a: "/workspace/results/"
+  a: "/workspaces/results/"
   b: "@/exp_name"
 seed: 100
 
@@ -48,6 +48,6 @@ pointernetpolicy:
     num_layers: 2
     search_method: "probabilistic"
     num_glimpses: 1
-  ckpt_path: "/workspace/results/pointernet/exp001/last.ckpt"
+  ckpt_path: "/workspaces/results/pointernet/exp001/last.ckpt"
   device: cuda:0
 
