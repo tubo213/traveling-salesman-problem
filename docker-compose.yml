@@ -1,7 +1,7 @@
 version: '3.5'
 
 services:
-  traveling_salesman_problem-gpu:
+  gpu:
     runtime: nvidia
     build: 
       context: .
@@ -16,10 +16,10 @@ services:
     ports: 
       - "8888:8888"
     tty: true
-  traveling_salesman_problem-cpu:
+  cpu:
     build: 
       context: .
-      dockerfile: ./Dockerfile-cpu
+      dockerfile: ./Dockerfile
     volumes:
       - ./:/workspace
       - /dev/shm:/dev/shm
