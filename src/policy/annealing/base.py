@@ -46,10 +46,11 @@ class BaseAnnealing(BasePolicy):
             )
         return np.array(results)
 
-    def solve_sample(self, x_i, init_tour_i):
+    def solve_sample(self, x_i, init_tour_i, return_log=False):
         start_time = time.perf_counter()
         tour = init_tour_i
         crr_score = calc_score_i(tour, x_i)
+        logs = []
         while True:
             elapsed_time = time.perf_counter() - start_time
             if elapsed_time > self.timelimit:
@@ -63,7 +64,14 @@ class BaseAnnealing(BasePolicy):
             if np.random.rand() < prob:
                 tour = next_tour
                 crr_score = next_score
-        return tour
+
+                if return_log:
+                    logs.append((tour, crr_score))
+
+        if return_log:
+            return tour, logs
+        else:
+            return tour
 
     @abstractmethod
     def update(self, x_i, tour_i):
