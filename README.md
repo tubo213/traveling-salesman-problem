@@ -20,12 +20,12 @@ Implementation of algorithms for the Traveling Salesman Problem.
 
 For CPU version
 ```
-docker compose up traveling_salesman_problem-cpu
+docker compose up cpu
 ```
 
 For GPU version
 ```
-docker compose up traveling_salesman_problem-gpu
+docker compose up gpu
 ```
 
 ## Usage
