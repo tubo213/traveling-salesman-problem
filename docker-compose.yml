@@ -3,27 +3,27 @@ version: '3.5'
 services:
   gpu:
     runtime: nvidia
-    build: 
+    build:
       context: .
       dockerfile: ./Dockerfile
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
     volumes:
-      - ./:/workspace
+      - ./:/workspaces
       - /dev/shm:/dev/shm
-    working_dir: /workspace
-    ports: 
+    working_dir: /workspaces
+    ports:
       - "8888:8888"
     tty: true
   cpu:
-    build: 
+    build:
       context: .
       dockerfile: ./Dockerfile
     volumes:
-      - ./:/workspace
+      - ./:/workspaces
       - /dev/shm:/dev/shm
-    working_dir: /workspace
-    ports: 
-      - "8888:8888"
+    working_dir: /workspaces
+    ports:
+      - "9999:9999"
     tty: true
