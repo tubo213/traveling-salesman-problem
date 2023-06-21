@@ -1,30 +1,30 @@
-from src.generator import Generator
-from src.policy.pointernet.dataset import TSPDataset
-from src.policy.pointernet.datamodule import TSPDataModule
-from src.policy.pointernet.model import (
-    PointerNet,
-    TransformerPointerNet,
-    PointerNetCritic,
-    TransformerCritic,
-)
 import torch.optim as optim
+from pytorch_lightning import Trainer
+from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
+from pytorch_lightning.loggers import WandbLogger
+from torch.utils.data import DataLoader
 from transformers import (
+    Adafactor,
     get_cosine_schedule_with_warmup,
     get_linear_schedule_with_warmup,
-    Adafactor,
-)
-from pytorch_lightning import Trainer
-from pytorch_lightning.loggers import WandbLogger
-from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
-from torch.utils.data import DataLoader
-from src.policy import (
-    TwoOptPolicy,
-    ThreeOptPolicy,
-    RandomPolicy,
-    PointerNetPolicy,
-    GreedyPolicy,
 )
 
+from src.generator import Generator
+from src.policy import (
+    GreedyPolicy,
+    PointerNetPolicy,
+    RandomPolicy,
+    ThreeOptPolicy,
+    TwoOptPolicy,
+)
+from src.policy.pointernet.datamodule import TSPDataModule
+from src.policy.pointernet.dataset import TSPDataset
+from src.policy.pointernet.model import (
+    PointerNet,
+    PointerNetCritic,
+    TransformerCritic,
+    TransformerPointerNet,
+)
 
 CONFIG_TYPES = {
     # utils

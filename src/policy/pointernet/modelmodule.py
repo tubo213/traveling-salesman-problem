@@ -1,7 +1,7 @@
+import torch
+import torch.nn as nn
 from pytorch_lightning import LightningModule
 from pytorch_pfn_extras.config import Config
-import torch.nn as nn
-import torch
 
 
 class ActorCriticModule(LightningModule):

@@ -12,3 +12,4 @@ click
 pulp
 ttimer
 optuna
+japanize_matplotlib

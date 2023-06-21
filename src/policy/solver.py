@@ -1,7 +1,8 @@
-from src.policy.base import BasePolicy
 import numpy as np
 import pulp
 from scipy.spatial import distance_matrix
+
+from src.policy.base import BasePolicy
 
 
 class SolverPolicy(BasePolicy):
@@ -55,5 +56,6 @@ if __name__ == "__main__":
     policy = SolverPolicy()
     routes = policy.solve(x)
     import matplotlib.pyplot as plt
+
     fig = plt.figure(figsize=(10, 10))
     print(sorted(routes, key=lambda x: x[0]))

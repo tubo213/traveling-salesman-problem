@@ -1,10 +1,12 @@
+import time
+from abc import abstractmethod
+from typing import Optional
+
+import numpy as np
+from joblib import Parallel, delayed
+
 from src.policy.base import BasePolicy
 from src.policy.greedy import GreedyPolicy
-import numpy as np
-from abc import abstractmethod
-from joblib import Parallel, delayed
-from typing import Optional
-import time
 from src.utils import calc_score, tqdm_joblib
 
 

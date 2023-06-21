@@ -1,6 +1,8 @@
-from pytorch_pfn_extras.config import Config
-import yaml
 from typing import Optional
+
+import yaml
+from pytorch_pfn_extras.config import Config
+
 from src.config_types import CONFIG_TYPES
 
 

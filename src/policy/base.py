@@ -1,6 +1,7 @@
-from abc import ABCMeta, abstractmethod
-import numpy as np
 import random
+from abc import ABCMeta, abstractmethod
+
+import numpy as np
 
 
 class BasePolicy(metaclass=ABCMeta):

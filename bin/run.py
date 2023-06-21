@@ -1,14 +1,16 @@
-from src.utils import plot_results, calc_score, ExpResult
-from src.config import load_config
-from pytorch_pfn_extras.config import Config
+import logging
+from pathlib import Path
+from typing import List
+
 import click
+import matplotlib.pyplot as plt
+from pytorch_pfn_extras.config import Config
+from ttimer import get_timer
+
+from src.config import load_config
 from src.generator import Generator
 from src.policy.base import BasePolicy
-from typing import List
-from pathlib import Path
-import logging
-import matplotlib.pyplot as plt
-from ttimer import get_timer
+from src.utils import ExpResult, calc_score, plot_results
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s:%(name)s - %(message)s"

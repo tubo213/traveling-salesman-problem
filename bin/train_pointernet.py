@@ -1,11 +1,13 @@
+from pathlib import Path
+
+import click
+import wandb
 from pytorch_lightning import seed_everything
 from pytorch_pfn_extras.config import Config
+
+from src.config import load_config
 from src.policy.pointernet.datamodule import TSPDataModule
 from src.policy.pointernet.modelmodule import ActorCriticModule
-from src.config import load_config
-import wandb
-import click
-from pathlib import Path
 
 
 def train(cfg: Config):

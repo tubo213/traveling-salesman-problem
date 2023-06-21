@@ -2,49 +2,45 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-docker-compose
 {
 	"name": "Existing Docker Compose (Extend)",
-
 	// Update the 'dockerComposeFile' list if you have more compose files or use different names.
 	// The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
 	"dockerComposeFile": [
 		"../docker-compose.yml",
 		"docker-compose.yml"
 	],
-
 	// The 'service' property is the name of the service for the container that VS Code should
 	// use. Update this value and .devcontainer/docker-compose.yml to the real service name.
 	"service": "gpu",
-
 	// The optional 'workspaceFolder' property is the path VS Code should open by default when
 	// connected. This is typically a file mount in .devcontainer/docker-compose.yml
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
-
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
-
 	// Uncomment the next line if you want start specific services in your Docker Compose config.
 	// "runServices": [],
-
 	// Uncomment the next line if you want to keep your containers running after VS Code shuts down.
 	// "shutdownAction": "none",
-
 	// Uncomment the next line to run commands after the container is created.
 	// "postCreateCommand": "cat /etc/os-release",
-
 	// Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "devcontainer"
-
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"GitHub.copilot",
+				"ms-toolsai.jupyter",
+				"ms-python.isort"
+			],
 			"settings": {
 				"files.autoSave": "afterDelay",
 				"files.autoSaveDelay": 800,
 				"files.trimTrailingWhitespace": true,
-				"editor.formatOnSave": true,
 				"files.insertFinalNewline": true,
+				"editor.formatOnSave": true,
 				"python.formatting.provider": "black",
 				"python.linting.mypyEnabled": true,
 				"python.linting.lintOnSave": true,
@@ -58,7 +54,13 @@
 				"python.formatting.blackArgs": [
 					"--line-length=99"
 				],
+				"isort.args": [
+					"--profile",
+					"black"
+				],
 				"[python]": {
+					// "editor.defaultFormatter": "ms-python.black-formatter",
+					"editor.formatOnSave": true,
 					"editor.insertSpaces": true,
 					"editor.detectIndentation": true,
 					"editor.tabSize": 4,
@@ -71,11 +73,7 @@
 				],
 				"python.testing.unittestEnabled": false,
 				"python.testing.pytestEnabled": true
-			},
-			"extensions": [
-				"ms-python.python",
-				"GitHub.copilot"
-			]
+			}
 		}
 	}
 }

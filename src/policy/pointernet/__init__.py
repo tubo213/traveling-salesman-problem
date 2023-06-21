@@ -1,9 +1,11 @@
-from src.policy.pointernet.model import PointerNet
-from src.policy.base import BasePolicy
-import torch
-import numpy as np
 from pathlib import Path
 from typing import Optional
+
+import numpy as np
+import torch
+
+from src.policy.base import BasePolicy
+from src.policy.pointernet.model import PointerNet
 
 
 class PointerNetPolicy(BasePolicy):
